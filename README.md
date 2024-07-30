@@ -1,6 +1,7 @@
 # qna-bot
 
-## This is a Q&A chatbot, 
+## This is a Q&A chatbot
+![alt text](./assets/qna_bot.png)
 
 ### Stack
 
