@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 from config import DevelopmentConfig, ProductionConfig, TestingConfig
-from query_processing import retrieve_similar_content 
+from query_processing import retrieve_similar_content_llm, retrieve_similar_content_tfidf, retrieve_similar_content_word2vec 
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -24,12 +24,19 @@ app.app_context().push()
 def answer_query():
     data = request.get_json()
     query = data.get('query', '')
+    model = data.get('model', '')
     if not query:
         return jsonify({'response': "No query provided"}), 400
-    print("query : ", query)
-    similar_content = retrieve_similar_content(query)
+    
+    if model=="llm":
+        similar_content = retrieve_similar_content_llm(query)
+    if model=="tfidf":
+        similar_content = retrieve_similar_content_tfidf(query)
+    if model=="word2vec":
+        similar_content = retrieve_similar_content_word2vec(query)
+
     response_data = [
-        {'question': content[0], 'answer': content[1]}
+        {'question': content[0], 'answer': content[1], 'confidence': content[2]}
         for content in similar_content
     ]  
     return jsonify({'response': "Here's similar content", 'data': response_data})
